@@ -7,12 +7,12 @@ import numpy as np
 import tensorflow as tf
 import time
 
-from tf_pose import common
-from tf_pose.common import CocoPart
-from tf_pose.tensblur.smoother import Smoother
+from . import common
+from .common import CocoPart
+from .tensblur.smoother import Smoother
 
 try:
-    from tf_pose.pafprocess import pafprocess
+    from .pafprocess import pafprocess
 except ModuleNotFoundError as e:
     print(e)
     print('you need to build c++ library for pafprocess. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess')
@@ -228,7 +228,7 @@ class TfPoseEstimator:
                 body_part = human.body_parts[i]
                 center = (int(body_part.x * image_w + 0.5), int(body_part.y * image_h + 0.5))
                 centers[i] = center
-                cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=3, lineType=8, shift=0)
+                cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=0, lineType=8, shift=0)
 
             # draw line
             for pair_order, pair in enumerate(common.CocoPairsRender):
@@ -236,7 +236,7 @@ class TfPoseEstimator:
                     continue
 
                 # npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
-                cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
+                cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 2)
 
         return npimg
 

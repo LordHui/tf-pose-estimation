@@ -1,5 +1,5 @@
 import os
-from os.path import dirname, abspath
+from os.path import dirname, abspath, realpath
 
 import tensorflow as tf
 from tf_pose.network_mobilenet import MobilenetNetwork
@@ -80,7 +80,7 @@ def get_graph_path(model_name):
         'mobilenet_thin': 'graph/mobilenet_thin/graph_opt.pb'
     }
 
-    base_data_dir = dirname(dirname(abspath(__file__)))
+    base_data_dir = dirname(dirname(realpath(__file__)))
     if os.path.exists(os.path.join(base_data_dir, 'models')):
         base_data_dir = os.path.join(base_data_dir, 'models')
     else:
