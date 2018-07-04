@@ -385,6 +385,6 @@ if __name__ == '__main__':
 
     t = time.time()
     humans = PoseEstimator.estimate_paf(data['peaks'], data['heatMat'], data['pafMat'])
-    dt = time.time() - t;
+    dt = time.time() - t
     t = time.time()
     logger.info('elapsed #humans=%d time=%.8f' % (len(humans), dt))
