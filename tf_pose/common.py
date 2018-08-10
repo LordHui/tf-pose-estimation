@@ -50,23 +50,6 @@ class MPIIPart(Enum):
 
     @staticmethod
     def from_coco(human):
-        # t = {
-        #     MPIIPart.RAnkle: CocoPart.RAnkle,
-        #     MPIIPart.RKnee: CocoPart.RKnee,
-        #     MPIIPart.RHip: CocoPart.RHip,
-        #     MPIIPart.LHip: CocoPart.LHip,
-        #     MPIIPart.LKnee: CocoPart.LKnee,
-        #     MPIIPart.LAnkle: CocoPart.LAnkle,
-        #     MPIIPart.RWrist: CocoPart.RWrist,
-        #     MPIIPart.RElbow: CocoPart.RElbow,
-        #     MPIIPart.RShoulder: CocoPart.RShoulder,
-        #     MPIIPart.LShoulder: CocoPart.LShoulder,
-        #     MPIIPart.LElbow: CocoPart.LElbow,
-        #     MPIIPart.LWrist: CocoPart.LWrist,
-        #     MPIIPart.Neck: CocoPart.Neck,
-        #     MPIIPart.Nose: CocoPart.Nose,
-        # }
-
         t = [
             (MPIIPart.Head, CocoPart.Nose),
             (MPIIPart.Neck, CocoPart.Neck),
@@ -85,15 +68,47 @@ class MPIIPart(Enum):
         ]
 
         pose_2d_mpii = []
-        visibilty = []
-        for mpi, coco in t:
+        visibility = []
+
+        # Handle head differently
+        visibility.append(False)
+        pose_2d_mpii.append((0, 0))
+        if CocoPart.Nose.value in human.body_parts.keys():
+            visibility[0] = True
+            pose_2d_mpii[0] = ((human.body_parts[CocoPart.Nose.value].x, 
+                                human.body_parts[CocoPart.Nose.value].y))
+        if not visibility[0]:
+            head_parts_x = []
+            head_parts_y = []
+            for coco in [CocoPart.REar, CocoPart.LEar]:
+                if coco.value in human.body_parts.keys():
+                    visibility[0] = True
+                    head_parts_x.append(human.body_parts[coco.value].x)
+                    head_parts_y.append(human.body_parts[coco.value].y)
+            if visibility[0]:
+                avg_x = sum(head_parts_x) / len(head_parts_x)
+                avg_y = sum(head_parts_y) / len(head_parts_y)
+                pose_2d_mpii[0] = (avg_x, avg_y)
+        if not visibility[0]:
+            head_parts_x = []
+            head_parts_y = []
+            for coco in [CocoPart.REye, CocoPart.LEye]:
+                if coco.value in human.body_parts.keys():
+                    visibility[0] = True
+                    head_parts_x.append(human.body_parts[coco.value].x)
+                    head_parts_y.append(human.body_parts[coco.value].y)
+            if visibility[0]:
+                avg_x = sum(head_parts_x) / len(head_parts_x)
+                avg_y = sum(head_parts_y) / len(head_parts_y)
+                pose_2d_mpii[0] = (avg_x, avg_y)
+        for _, coco in t[1:]:
             if coco.value not in human.body_parts.keys():
                 pose_2d_mpii.append((0, 0))
-                visibilty.append(False)
+                visibility.append(False)
                 continue
             pose_2d_mpii.append((human.body_parts[coco.value].x, human.body_parts[coco.value].y))
-            visibilty.append(True)
-        return pose_2d_mpii, visibilty
+            visibility.append(True)
+        return pose_2d_mpii, visibility
 
 CocoPairs = [
     (1, 2), (1, 5), (2, 3), (3, 4), (5, 6), (6, 7), (1, 8), (8, 9), (9, 10), (1, 11),
